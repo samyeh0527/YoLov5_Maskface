@@ -66,6 +66,8 @@ class TransformerLayer(nn.Module):
         x = self.fc2(self.fc1(x)) + x
         return x
 
+        
+
 
 class TransformerBlock(nn.Module):
     # Vision Transformer https://arxiv.org/abs/2010.11929
