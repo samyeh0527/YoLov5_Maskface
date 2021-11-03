@@ -21,7 +21,6 @@ from convertMillis import *
 from  writecsv import get_timestamp 
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
-from MCU_1 import Temperature_detect
 from Music import music
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
@@ -32,7 +31,7 @@ from utils.torch_utils import select_device, load_classifier, time_sync
 import argparse
 import time
 from Autoresize import *
-
+#bool lock for mutilprocess
 soundlock =False
 
 
@@ -61,11 +60,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         hide_labels=False,  # hide labels
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
-        noise=0.05,
         Run_buffer = None,
-        main_buffer_golab =None,
-        locks=None,
-        sound_bools=None
         ):
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -300,36 +295,13 @@ def get_iou(bbox_ai, bbox_gt):
     return IoU
 
 
-#HC add
-def Daemon_buffer(queue_,main_buffer_golab):
+
+
+def main(opt):
     
-    while True:
-        # getTemp = Temperature_detect(7).Temperature_get()
-        getTemp =  random.randint(36,38)
-        queue_.put(getTemp)
-        main_buffer_golab.append(queue_.get())
-        if len(main_buffer_golab) >= 3500 : 
-            main_buffer_golab[:1500]=[]
-        time.sleep(1)
-    
-def sound_deamon(queue_,sound_bools,locks):
-    while True:
-
-        if locks.value == 1 and not sound_bools:
-            sound_bools.append(False)
-        elif locks.value == 0 and sound_bools is not empty : 
-            sound_bool = sound_bools.pop()
-            music(sound_bool).withoutmask()  
-            locks.value = 1
-        elif len(sound_bools) > 3:
-            sound_bools[:1] = []
-
-
-def main(opt,Temperature_lock,noise_lock):
-    if Temperature_lock and noise_lock is True: 
-        print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
-        check_requirements(exclude=('tensorboard', 'thop'))
-        run(**vars(opt))
+    print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
+    check_requirements(exclude=('tensorboard', 'thop'))
+    run(**vars(opt))
 
 
 if __name__ == "__main__":
@@ -337,20 +309,7 @@ if __name__ == "__main__":
     with open('timestamp.csv', 'w+', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['times(ms)','總人數','未戴口罩人數'])
-    # Process
-    manager = mp.Manager()
-    queue_ = mp.Queue()  
-    #Process share format list 
-    main_buffer_golab = manager.list()
-    sound_bools = manager.list()
-    locks = manager.Value('d',1)
-    #Default Bools 
-    sound_bools.append(False)  
-    # Set Process1 Process2  
-    process_1 = mp.Process(target=Daemon_buffer , args=(queue_,main_buffer_golab),daemon=True)
-    process_2 = mp.Process(target=sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
-    temp_lock,noise_lock = True,True
     # # Run
     opt = parse_opt()
-    main(opt,temp_lock,noise_lock)
+    main(opt)
 

@@ -5,28 +5,17 @@ from PySide6.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 from PySide6.QtCore import *
 from Yolov5UI import Ui_MainWindow
 import simplify
-
-import textwrap 
 import argparse
 import sys
 import time 
 from pathlib import Path
-import random
-import cv2
 from numpy import empty
-import torch
 import torch.backends.cudnn as cudnn
 import multiprocessing as mp
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
-from MCU_1 import Temperature_detect
-from Music import music
-from models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
-    apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from utils.plots import colors, plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_sync
+from utils.general import check_requirements,colorstr
+
 import argparse
 import time
 from Autoresize import *
@@ -135,10 +124,13 @@ class MainWindow(QMainWindow):
 
 
 def main(opt,Temperature_lock,noise_lock):
+    #Temperature lock and noise is bool for process lock can use process.lock replace
     if Temperature_lock and noise_lock is True: 
         process_1 = mp.Process(target=simplify.Daemon_buffer , args=(queue_,main_buffer_golab),daemon=True)
         process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
+        #temperature
         process_1.start()
+        #noise
         process_2.start()
         print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
         check_requirements(exclude=('tensorboard', 'thop'))
@@ -159,6 +151,7 @@ def main(opt,Temperature_lock,noise_lock):
         simplify.run(**vars(opt))
     
 if __name__ == "__main__":
+    
     cpu_count = mp.cpu_count()
     manager = mp.Manager()
     queue_ = mp.Queue()  
