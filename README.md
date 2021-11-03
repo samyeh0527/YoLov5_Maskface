@@ -15,8 +15,8 @@ i didn't pull currently version yolov5 so just push old version for this project
   
 ![1635474371422](https://user-images.githubusercontent.com/45279761/139363747-b998d8e8-0133-409c-95a6-fcd03f48188e.jpg)
 
-
-##timestamp fuction
+ 
+## timestamp fuction
 
  from detect.py adjust for custom fuction .
  the result format is HH:MM:SS / Total people / No mask people
