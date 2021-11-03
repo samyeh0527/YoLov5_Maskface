@@ -1,7 +1,7 @@
 import sys 
 import time
-from PySide6 import QtCore
-from PySide6.QtWidgets import QApplication, QListWidgetItem, QMainWindow
+from PySide6.QtGui import QBrush, QPen
+from PySide6.QtWidgets import QApplication, QGraphicsScene,QMainWindow
 from PySide6.QtCore import *
 from Yolov5UI import Ui_MainWindow
 import simplify
@@ -36,13 +36,45 @@ class MainWindow(QMainWindow):
         self.temperature = self.noise = False
         self.noise = False
         self.noiseIOU = None
-    
+        self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
+        self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
+        self.ui.graphicsView.setScene(self.graphics())
+        self.ui.spinBox.valueChanged.connect(self.spinbox_xy_valuechange)
+        self.ui.spinBox_2.valueChanged.connect(self.spinbox_xy_valuechange)
+        self.ui.spinBox_3.valueChanged.connect(self.spinbox_xy_valuechange)
+        self.ui.spinBox_4.valueChanged.connect(self.spinbox_xy_valuechange)
+        self.ui.textBrowser.append(f'''\\
+        ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+        |model              Speed(ms)  
+        |YOLOv5s            98         
+        |YOLOv5m            224        
+        |YOLOv5l            430       
+        |YOLOv5x            766        
+        ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+        * from Yolov5 Github 
+        * follow  GPL-3.0 License
+        * Can input video or youtube or RTSP or https
+        * Suggestion best video size is 640
+        ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+        ''')
+    def spinbox_xy_valuechange(self):
+        self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
+        self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
+        self.ui.graphicsView.setScene(self.graphics())
+        #Graphics view 
+    def graphics(self):
+        scene = QGraphicsScene()
+        pen = QPen(Qt.blue)
+        scene.addRect(QRectF ( 20,20,self.graphicsView_ret_width,self.graphicsView_ret_height),pen)
+        return scene
+
     def itemActivated_event(self):
         try:
             for item in self.ui.listWidget.selectedItems():
                 self.weights = item.text()
         except Exception as e:
             self.ui.textBrowser.append(e)
+
     def local__time(self):
         localtime = time.localtime()
         result = time.strftime("%Y-%m-%d %I:%M:%S %p", localtime)

@@ -17,9 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox, QGraphicsView,
     QLabel, QListWidget, QListWidgetItem, QMainWindow,
-    QPushButton, QRadioButton, QSizePolicy, QSlider,
-    QSpinBox, QStatusBar, QTabWidget, QTextBrowser,
-    QTextEdit, QWidget)
+    QPushButton, QRadioButton, QSizePolicy, QSpinBox,
+    QStatusBar, QTabWidget, QTextBrowser, QTextEdit,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -117,14 +117,6 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
-        self.verticalSlider = QSlider(self.tab_2)
-        self.verticalSlider.setObjectName(u"verticalSlider")
-        self.verticalSlider.setGeometry(QRect(780, 19, 22, 711))
-        self.verticalSlider.setOrientation(Qt.Vertical)
-        self.horizontalSlider = QSlider(self.tab_2)
-        self.horizontalSlider.setObjectName(u"horizontalSlider")
-        self.horizontalSlider.setGeometry(QRect(10, 740, 751, 22))
-        self.horizontalSlider.setOrientation(Qt.Horizontal)
         self.graphicsView = QGraphicsView(self.tab_2)
         self.graphicsView.setObjectName(u"graphicsView")
         self.graphicsView.setGeometry(QRect(0, 0, 771, 721))
@@ -170,30 +162,6 @@ class Ui_MainWindow(object):
         self.spinBox_4.setMinimum(0)
         self.spinBox_4.setMaximum(1000)
         self.spinBox_4.setValue(50)
-        self.pushButton_3 = QPushButton(self.tab_2)
-        self.pushButton_3.setObjectName(u"pushButton_3")
-        self.pushButton_3.setGeometry(QRect(960, 190, 75, 23))
-        self.label_23 = QLabel(self.tab_2)
-        self.label_23.setObjectName(u"label_23")
-        self.label_23.setGeometry(QRect(950, 260, 91, 41))
-        self.spinBox_5 = QSpinBox(self.tab_2)
-        self.spinBox_5.setObjectName(u"spinBox_5")
-        self.spinBox_5.setGeometry(QRect(970, 320, 51, 21))
-        self.spinBox_5.setMinimum(0)
-        self.spinBox_5.setMaximum(100)
-        self.spinBox_5.setValue(0)
-        self.spinBox_6 = QSpinBox(self.tab_2)
-        self.spinBox_6.setObjectName(u"spinBox_6")
-        self.spinBox_6.setGeometry(QRect(970, 360, 51, 21))
-        self.spinBox_6.setMinimum(0)
-        self.spinBox_6.setMaximum(100)
-        self.spinBox_6.setValue(0)
-        self.label_24 = QLabel(self.tab_2)
-        self.label_24.setObjectName(u"label_24")
-        self.label_24.setGeometry(QRect(940, 310, 16, 31))
-        self.label_25 = QLabel(self.tab_2)
-        self.label_25.setObjectName(u"label_25")
-        self.label_25.setGeometry(QRect(940, 350, 16, 31))
         self.tabWidget.addTab(self.tab_2, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
@@ -222,11 +190,11 @@ class Ui_MainWindow(object):
         ___qlistwidgetitem = self.listWidget.item(0)
         ___qlistwidgetitem.setText(QCoreApplication.translate("MainWindow", u"yolov5s", None));
         ___qlistwidgetitem1 = self.listWidget.item(1)
-        ___qlistwidgetitem1.setText(QCoreApplication.translate("MainWindow", u"yolov5x", None));
+        ___qlistwidgetitem1.setText(QCoreApplication.translate("MainWindow", u"yolov5m", None));
         ___qlistwidgetitem2 = self.listWidget.item(2)
         ___qlistwidgetitem2.setText(QCoreApplication.translate("MainWindow", u"yolov5l", None));
         ___qlistwidgetitem3 = self.listWidget.item(3)
-        ___qlistwidgetitem3.setText(QCoreApplication.translate("MainWindow", u"yolov5m", None));
+        ___qlistwidgetitem3.setText(QCoreApplication.translate("MainWindow", u"yolov5x", None));
         self.listWidget.setSortingEnabled(__sortingEnabled)
 
         self.radioButton_3.setText(QCoreApplication.translate("MainWindow", u"1080x1920", None))
@@ -242,10 +210,6 @@ class Ui_MainWindow(object):
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"Y", None))
         self.label_21.setText(QCoreApplication.translate("MainWindow", u"X", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"Y", None))
-        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Setting", None))
-        self.label_23.setText(QCoreApplication.translate("MainWindow", u"\u6846\u6846\u7e2e\u653e\u6bd4\u4f8b", None))
-        self.label_24.setText(QCoreApplication.translate("MainWindow", u"X", None))
-        self.label_25.setText(QCoreApplication.translate("MainWindow", u"Y", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
     # retranslateUi
 
