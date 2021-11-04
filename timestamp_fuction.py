@@ -4,14 +4,12 @@ Usage:
     $ python
      path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
-import os
 import csv
 import textwrap 
 import argparse
 import sys
 import time 
 from pathlib import Path
-import random
 import cv2
 from numpy import empty
 import torch
@@ -156,6 +154,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
+            
+            
             if len(det):
                 count = boundingbox = 0
                 # Rescale boxes from img_size to im0 size
@@ -168,9 +168,10 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     wrapped_text = textwrap.wrap(showcls, width=17)
                 # Write results
                 for *xyxy, conf, cls in reversed(det):    
-                    
                     c1, c2 = (int(xyxy[0]), int(xyxy[1])), (int(xyxy[2]), int(xyxy[3]))
-                    x_1 , y_1 ,x_2,y_2= bboxautoresize()
+                    print(imc.shape[0],imc.shape[1])
+                    x_1 , y_1 ,x_2,y_2= bboxautoresize(y = imc.shape[0],x = imc.shape[1])
+                    print(x_1 , y_1 ,x_2,y_2)
                     bboxCenter = [x_1, y_1, x_2, y_2]
                     bbox_2 = [c1[0], c1[1], (c2[0]-c1[0]), (c2[1]-c1[1])]
                     bbox_1 = [x_1, y_1, (x_2-x_1), (y_2-y_1)]
@@ -264,7 +265,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='./yolov5s.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='Night Walk in Tokyo Shibuya_Trim60.mp4', help='file/dir/URL/glob, 0 for webcam')
+    parser.add_argument('--source', type=str, default='20211102115600_1635829598759.mp4', help='file/dir/URL/glob, 0 for webcam')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')

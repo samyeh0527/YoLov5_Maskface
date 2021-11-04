@@ -7,6 +7,6 @@ class convertMillis:
         seconds=(millis/1000.0)%60
         minutes=(millis/(1000*60))%60
         hours=(millis/(1000*60*60))%24
-        output_format = f'{int(hours)}:{int(minutes)}:{int(seconds)}'
+        output_format = f'{int(hours)}:{int(minutes)}:{seconds:.2f}'
 
         return output_format
