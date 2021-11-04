@@ -113,7 +113,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     
     TemperatureWork = None
     Run_buffer = 0
-    for path, img, im0s, vid_cap in dataset:       
+    for path, img, im0s, vid_cap ,timestamp in dataset:       
         if pt:
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -183,7 +183,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         Run_buffer+=1
                         #c1 = xy left top ,c2 = xy2 right bottom
                         c1, c2 = (int(xyxy[0]), int(xyxy[1])), (int(xyxy[2]), int(xyxy[3]))
-                        x_1 , y_1 ,x_2,y_2= bboxautoresize()
+                        print(imc.shape[0],imc.shape[1])
+                        x_1 , y_1 ,x_2,y_2= bboxautoresize(y = imc.shape[0],x = imc.shape[1])
                         bboxCenter = [x_1, y_1, x_2, y_2]
                         bbox_2 = [c1[0], c1[1], (c2[0]-c1[0]), (c2[1]-c1[1])]
                         bbox_1 = [x_1, y_1, (x_2-x_1), (y_2-y_1)]
@@ -357,7 +358,8 @@ if __name__ == "__main__":
     # process_1 = mp.Process(target=Daemon_buffer , args=(queue_,main_buffer_golab),daemon=True)
     # process_2 = mp.Process(target=sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
  
-    # # Run
-    opt = parse_opt()
-    main(opt)
+    # # # Run
+    # opt = parse_opt()
+    # main(opt)
 
+    pass

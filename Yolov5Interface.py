@@ -10,12 +10,10 @@ import sys
 import time 
 from pathlib import Path
 from numpy import empty
-import torch.backends.cudnn as cudnn
 import multiprocessing as mp
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 from utils.general import check_requirements,colorstr
-
 import argparse
 import time
 from Autoresize import *
@@ -25,7 +23,6 @@ from Autoresize import *
 soundlock =False
 temp_lock = noise_lock = False
 class MainWindow(QMainWindow):
-    
     def __init__(self):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
@@ -43,20 +40,6 @@ class MainWindow(QMainWindow):
         self.ui.spinBox_2.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_3.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_4.valueChanged.connect(self.spinbox_xy_valuechange)
-        self.ui.textBrowser.append(f'''\\
-        ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-        |model              Speed(ms)  
-        |YOLOv5s            98         
-        |YOLOv5m            224        
-        |YOLOv5l            430       
-        |YOLOv5x            766        
-        ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
-        * from Yolov5 Github 
-        * follow  GPL-3.0 License
-        * Can input video or youtube or RTSP or https
-        * Suggestion best video size is 640
-        ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
-        ''')
     def spinbox_xy_valuechange(self):
         self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
         self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
@@ -65,7 +48,9 @@ class MainWindow(QMainWindow):
     def graphics(self):
         scene = QGraphicsScene()
         pen = QPen(Qt.blue)
-        scene.addRect(QRectF ( 20,20,self.graphicsView_ret_width,self.graphicsView_ret_height),pen)
+        origin = QPen(Qt.green)
+        scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width,self.graphicsView_ret_height),pen)
+        
         return scene
 
     def itemActivated_event(self):
@@ -129,7 +114,7 @@ class MainWindow(QMainWindow):
             opt = self.parse_opt()
             main(opt,temp_lock,noise_lock)
         except Exception as e :
-            self.ui.textBrowser.append(f'{self.local__time()  } {e}')
+            self.ui.textBrowser.append(f'{self.local__time()  } show_all_info error {e}')
 
 
         
@@ -141,7 +126,7 @@ class MainWindow(QMainWindow):
             parser.add_argument('--conf-thres', type=float, default=self.confidence_threshold, help='confidence threshold')
             parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
             parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
-            parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+            parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
             parser.add_argument('--project', default='runs/detect', help='save results to project/name')
             parser.add_argument('--name', default='exp', help='save results to project/name')
             parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
@@ -155,9 +140,9 @@ class MainWindow(QMainWindow):
 
 
 
-def main(opt,Temperature_lock,noise_lock):
+def main(opt,Temp_lock,noise_lock):
     #Temperature lock and noise is bool for process lock can use process.lock replace
-    if Temperature_lock and noise_lock is True: 
+    if Temp_lock and noise_lock is True: 
         process_1 = mp.Process(target=simplify.Daemon_buffer , args=(queue_,main_buffer_golab),daemon=True)
         process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
         #temperature
