@@ -26,8 +26,9 @@ class Colors:
     # Ultralytics color palette https://ultralytics.com/
     def __init__(self):
         # hex = matplotlib.colors.TABLEAU_COLORS.values()
-        hex = ('FF3838', 'FF9D97', 'FF701F', 'FFB21D', 'CFD231', '48F90A', '92CC17', '3DDB86', '1A9334', '00D4BB',
-               '2C99A8', '00C2FF', '344593', '6473FF', '0018EC', '8438FF', '520085', 'CB38FF', 'FF95C8', 'FF37C7')
+        hex = ( '00FFFF', 'FF0000','C07AB8')
+
+        
         self.palette = [self.hex2rgb('#' + c) for c in hex]
         self.n = len(self.palette)
 
@@ -65,7 +66,7 @@ def butter_lowpass_filtfilt(data, cutoff=1500, fs=50000, order=5):
     return filtfilt(b, a, data)  # forward-backward filter
 
 
-def plot_one_box(x, im, color=(128, 128, 128), label=None, line_thickness=3):
+def plot_one_box(x, im, color=(128, 128, 128), label=None, line_thickness=3,TemperatureWork = None):
     # Plots one bounding box on image 'im' using OpenCV
     assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to plot_on_box() input image.'
     tl = line_thickness or round(0.002 * (im.shape[0] + im.shape[1]) / 2) + 1  # line/font thickness
@@ -75,9 +76,13 @@ def plot_one_box(x, im, color=(128, 128, 128), label=None, line_thickness=3):
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
         c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-        cv2.rectangle(im, c1, c2, color, -1, cv2.LINE_AA)  # filled
+        # cv2.rectangle(im, c1, c2, color, -1, cv2.LINE_AA)  # filled
+        
+        if TemperatureWork is not None:
+            TemperatureWork ='Temperature :'+ str(TemperatureWork)
+            cv2.putText(im, TemperatureWork, (c1[0], c1[1] - 27), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         cv2.putText(im, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
-
+    
 
 def plot_one_box_PIL(box, im, color=(128, 128, 128), label=None, line_thickness=None):
     # Plots one bounding box on image 'im' using PIL
