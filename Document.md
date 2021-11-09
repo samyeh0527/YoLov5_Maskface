@@ -6,3 +6,4 @@ Process class:
 
 1.Daemon_buffer  tempeature用
 2.sound_deamon   Noise 用 
+3.未設置停止訊號故每次只能從新要資源,多次後將會造成cpu 使用率過高。
