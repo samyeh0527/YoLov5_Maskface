@@ -5,8 +5,7 @@
 
   didn't pull rerently version yolov5 .so just push old version for this project 
   ### 我沒有拉最近的yolov5 ,所以請直接拉這版的由於新版更新很快若用補丁的方式容易會造成新舊功能錯誤或無法執行.
-
-## mask model pt file link https://drive.google.com/drive/folders/1Fg8U0zLvaTLlZiFZCg5-8P-9eVyBSgmB?usp=sharing
+  #### mask model pt file link https://drive.google.com/drive/folders/1Fg8U0zLvaTLlZiFZCg5-8P-9eVyBSgmB?usp=sharing
 
 
 
