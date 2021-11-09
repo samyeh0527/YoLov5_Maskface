@@ -1,15 +1,12 @@
 #Autoresize
-def bboxautoresize(y=0 ,x=0):
-    bboxheight = y
-    bboxwidth = x
+def bboxautoresize(centery=0 ,centerx=0,x1=0,y1=0,x2=0,y2=0):
+    #寬
+    bboxwidth = centerx
+    #高
+    bboxheight = centery
     
     bboxwidth , bboxheight = int(bboxwidth),int(bboxheight)
-    left_x ,left_y= int(bboxwidth/2-50) , int(bboxheight/2-150)
-    right_x , right_y = int(bboxwidth/2+50) ,int(bboxheight/2+150)
+    left_x ,left_y= int(bboxwidth/2-x1) , int(bboxheight/2-y1)
+    right_x , right_y = int(bboxwidth/2+x2) ,int(bboxheight/2+y2)
     return left_x,left_y,right_x,right_y
 
-
-# video_size1,video_size2 = 1080,1920
-# left_x,left_y,right_x,right_y = bboxautoresize(video_size1,video_size2 )
-
-# print(left_x,left_y,right_x,right_y)

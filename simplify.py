@@ -26,7 +26,7 @@ from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
 import argparse
 import time
-from Autoresize import *
+from Autoresize import bboxautoresize
 
 soundlock =False
 
@@ -59,14 +59,18 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         half=False,  # use FP16 half-precision inference
         noise=0.05,
         Run_buffer = None,
-        main_buffer_golab =None,
-        locks=None,
-        sound_bools=None
+        main_buffer_golab = None,
+        locks = None,
+        sound_bools = None,
+        x1 =0,
+        y1 =0,
+        x2 =0,
+        y2 =0
         ):
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
-
+    
     # Directories
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
@@ -117,7 +121,6 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         if pt:
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
-            print()
         elif onnx:
             img = img.astype('float32')
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -183,8 +186,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         Run_buffer+=1
                         #c1 = xy left top ,c2 = xy2 right bottom
                         c1, c2 = (int(xyxy[0]), int(xyxy[1])), (int(xyxy[2]), int(xyxy[3]))
-                        print(imc.shape[0],imc.shape[1])
-                        x_1 , y_1 ,x_2,y_2= bboxautoresize(y = imc.shape[0],x = imc.shape[1])
+                        x_1 , y_1 ,x_2,y_2= bboxautoresize(imc.shape[0],imc.shape[1],x1,y1,x2,y2)
                         bboxCenter = [x_1, y_1, x_2, y_2]
                         bbox_2 = [c1[0], c1[1], (c2[0]-c1[0]), (c2[1]-c1[1])]
                         bbox_1 = [x_1, y_1, (x_2-x_1), (y_2-y_1)]
@@ -247,29 +249,28 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 cv2.namedWindow(str(p), cv2.WINDOW_NORMAL)
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
-
             # Save results (image with detections)
-            if save_img:
-                if dataset.mode == 'image':
-                    cv2.imwrite(save_path, im0)
-                else:  # 'video' or 'stream'
-                    if vid_path[i] != save_path:  # new video
-                        vid_path[i] = save_path
-                        if isinstance(vid_writer[i], cv2.VideoWriter):
-                            vid_writer[i].release()  # release previous video writer
-                        if vid_cap:  # video
-                            fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                            w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                            h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        else:  # stream
-                            fps, w, h = 30, im0.shape[1], im0.shape[0]
-                            save_path += '.mp4'
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                    vid_writer[i].write(im0)
+            # if save_img:
+            #     if dataset.mode == 'image':
+            #         cv2.imwrite(save_path, im0)
+            #     else:  # 'video' or 'stream'
+            #         if vid_path[i] != save_path:  # new video
+            #             vid_path[i] = save_path
+            #             if isinstance(vid_writer[i], cv2.VideoWriter):
+            #                 vid_writer[i].release()  # release previous video writer
+            #             if vid_cap:  # video
+            #                 fps = vid_cap.get(cv2.CAP_PROP_FPS)
+            #                 w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            #                 h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            #             else:  # stream
+            #                 fps, w, h = 30, im0.shape[1], im0.shape[0]
+            #                 save_path += '.mp4'
+            #             vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+            #         vid_writer[i].write(im0)
                     
-    if save_txt or save_img:
-        s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-        print(f"Results saved to {colorstr('bold', save_dir)}{s}")
+    # if save_txt or save_img:
+    #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
+    #     print(f"Results saved to {colorstr('bold', save_dir)}{s}")
 
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
@@ -277,22 +278,22 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     print(f'Done. ({time.time() - t0:.3f}s)')
 
 
-def parse_opt():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='./best.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='https://www.youtube.com/watch?v=R2iMq5LKXco', help='file/dir/URL/glob, 0 for webcam')
-    parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
-    parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
-    parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--project', default='runs/detect', help='save results to project/name')
-    parser.add_argument('--name', default='exp', help='save results to project/name')
-    parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
-    # parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
+# def parse_opt():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--weights', nargs='+', type=str, default='./best.pt', help='model.pt path(s)')
+#     parser.add_argument('--source', type=str, default='https://www.youtube.com/watch?v=R2iMq5LKXco', help='file/dir/URL/glob, 0 for webcam')
+#     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
+#     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
+#     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
+#     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
+#     parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+#     parser.add_argument('--project', default='runs/detect', help='save results to project/name')
+#     parser.add_argument('--name', default='exp', help='save results to project/name')
+#     parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
+#     # parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
 
-    opt = parser.parse_args()
-    return opt
+#     opt = parser.parse_args()
+#     return opt
 
 
 #HC add
@@ -324,16 +325,18 @@ def Daemon_buffer(queue_,main_buffer_golab):
         time.sleep(1)
     
 def sound_deamon(queue_,sound_bools,locks):
+    
     while True:
-
         if locks.value == 1 and not sound_bools:
             sound_bools.append(False)
         elif locks.value == 0 and sound_bools is not empty : 
             sound_bool = sound_bools.pop()
             music(sound_bool).withoutmask()  
             locks.value = 1
-        elif len(sound_bools) > 3:
-            sound_bools[:1] = []
+        if len(sound_bools) > 10:
+            sound_bools[3:] = []
+
+
 
 
 def main(opt,Temperature_lock,noise_lock):
@@ -343,23 +346,3 @@ def main(opt,Temperature_lock,noise_lock):
         run(**vars(opt))
 
 
-if __name__ == "__main__":
-    # pass
-    # # Process
-    # manager = mp.Manager()
-    # queue_ = mp.Queue()  
-    # #Process share format list 
-    # main_buffer_golab = manager.list()
-    # sound_bools = manager.list()
-    # locks = manager.Value('d',1)
-    # #Default Bools 
-    # sound_bools.append(False)  
-    # # Set Process1 Process2  
-    # process_1 = mp.Process(target=Daemon_buffer , args=(queue_,main_buffer_golab),daemon=True)
-    # process_2 = mp.Process(target=sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
- 
-    # # # Run
-    # opt = parse_opt()
-    # main(opt)
-
-    pass

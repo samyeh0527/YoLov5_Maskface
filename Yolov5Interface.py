@@ -15,8 +15,9 @@ FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 from utils.general import check_requirements,colorstr
 import argparse
-import time
+import time , gc
 from Autoresize import *
+gc.enable()
 #rtsp://admin:226988@192.168.8.149:554/live/profile.0
 
 
@@ -33,6 +34,7 @@ class MainWindow(QMainWindow):
         self.temperature = self.noise = False
         self.noise = False
         self.noiseIOU = None
+        self.ui.spinBox.valueChanged.connect(self.spinbox_xy_valuechange)
         self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
         self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
         self.ui.graphicsView.setScene(self.graphics())
@@ -40,17 +42,27 @@ class MainWindow(QMainWindow):
         self.ui.spinBox_2.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_3.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_4.valueChanged.connect(self.spinbox_xy_valuechange)
+        self.x1 = self.ui.spinBox.value()
+        self.y1 = self.ui.spinBox_2.value()  
+        self.x2 = self.ui.spinBox_3.value()
+        self.y2 = self.ui.spinBox_4.value()
+        self.first_run = False
+        
+        #監聽事件
     def spinbox_xy_valuechange(self):
         self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
         self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
         self.ui.graphicsView.setScene(self.graphics())
+        self.x1 = self.ui.spinBox.value()
+        self.y1 = self.ui.spinBox_2.value()  
+        self.x2 = self.ui.spinBox_3.value()
+        self.y2 = self.ui.spinBox_4.value()
         #Graphics view 
     def graphics(self):
         scene = QGraphicsScene()
         pen = QPen(Qt.blue)
-        origin = QPen(Qt.green)
-        scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width,self.graphicsView_ret_height),pen)
-        
+        scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width/5,self.graphicsView_ret_height/5),pen)
+         
         return scene
 
     def itemActivated_event(self):
@@ -77,10 +89,10 @@ class MainWindow(QMainWindow):
     def otherfuction(self):
         self.temperature = self.ui.checkBox_2.isChecked()
         self.noise = self.ui.checkBox.isChecked()
-        
+
         
     def show_all_info(self):
-        try:
+        # try:
             cpu_count = mp.cpu_count()
             self.ui.textBrowser.append(f'')
             self.source = self.ui.textEdit.toPlainText()
@@ -96,26 +108,11 @@ class MainWindow(QMainWindow):
             self.ui.textBrowser.append(f'{self.local__time()  } confidence threshold  : {self.confidence_threshold}')
             self.ui.textBrowser.append(f'{self.local__time()  } other fuction  temperature : {self.temperature} noise : {self.noise}') 
             self.ui.textBrowser.append(f'{self.local__time()  } Noise IOU  : {self.noiseIOU}')     
-                                        
-            if self.temperature is True and self.noise is True:
-                global temp_lock
-                temp_lock = True
-                global noise_lock
-                noise_lock = True 
 
-            elif self.temperature is True:
-                temp_lock = True
-                noise_lock = False 
-
-            elif self.noise is True:
-                temp_lock = False
-                noise_lock = True
-      
             opt = self.parse_opt()
-            main(opt,temp_lock,noise_lock)
-        except Exception as e :
-            self.ui.textBrowser.append(f'{self.local__time()  } show_all_info error {e}')
-
+            main(self,opt)
+        # except Exception as e :
+            # self.ui.textBrowser.append(f'{self.local__time()  } show_all_info error {e}')
 
         
     def parse_opt(self):
@@ -130,21 +127,25 @@ class MainWindow(QMainWindow):
             parser.add_argument('--project', default='runs/detect', help='save results to project/name')
             parser.add_argument('--name', default='exp', help='save results to project/name')
             parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
+            parser.add_argument('--save-txt', action='store_false', help='save results to *.txt')
             parser.add_argument('--noise',default=self.noiseIOU)
             parser.add_argument('--main_buffer_golab',default=main_buffer_golab)                
             parser.add_argument('--locks',default=locks)
             parser.add_argument('--sound_bools',default=sound_bools)
+            parser.add_argument('--x1',default=self.x1)
+            parser.add_argument('--y1',default=self.y1)
+            parser.add_argument('--x2',default=self.x2)
+            parser.add_argument('--y2',default=self.y2)
             opt = parser.parse_args()
             return opt
 
 
 
 
-def main(opt,Temp_lock,noise_lock):
-    #Temperature lock and noise is bool for process lock can use process.lock replace
-    if Temp_lock and noise_lock is True: 
-        process_1 = mp.Process(target=simplify.Daemon_buffer , args=(queue_,main_buffer_golab),daemon=True)
-        process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
+def main(self,opt): 
+#Temperature lock and noise is bool for process lock can use process.lock replace   
+     
+    if self.temperature and self.noise is True: 
         #temperature
         process_1.start()
         #noise
@@ -155,20 +156,36 @@ def main(opt,Temp_lock,noise_lock):
         process_2.kill()
         process_1.kill()
         
-    elif noise_lock is True: 
-        process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon=True)
-        process_2.start()
-        print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
-        check_requirements(exclude=('tensorboard', 'thop'))
-        simplify.run(**vars(opt))
-        process_2.kill()
+    elif self.noise is True: 
+        if self.first_run == True:
+            self.ui.textBrowser.append(f'{self.local__time()  }  Process2 state :{process_2.pid} {process_2.is_alive()}')   
+            print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
+            check_requirements(exclude=('tensorboard', 'thop'))
+            simplify.run(**vars(opt))
+        else:
+            process_2.start()
+            self.ui.textBrowser.append(f'{self.local__time()  }  New Process2 state :{process_2.pid} {process_2.is_alive()}')   
+            print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
+            check_requirements(exclude=('tensorboard', 'thop'))
+            simplify.run(**vars(opt))
+            self.first_run = True
+        gc.collect()
+        
     else:
+        
+        self.ui.textBrowser.append(f'{self.local__time()  }  Process2 state : {process_2.is_alive()}') 
+        if process_2.is_alive():
+            process_2.kill()
+            self.ui.textBrowser.append(f'{self.local__time()  }  Process2 state : {process_2.is_alive()}')    
         print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
         check_requirements(exclude=('tensorboard', 'thop'))
         simplify.run(**vars(opt))
-    
+        gc.collect()
+
+
+
 if __name__ == "__main__":
-    
+
     cpu_count = mp.cpu_count()
     manager = mp.Manager()
     queue_ = mp.Queue()  
@@ -177,6 +194,8 @@ if __name__ == "__main__":
     locks = manager.Value('d',1)
     #Default Bools 
     sound_bools.append(False)  
+    process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon = True)
+    process_1 = mp.Process(target=simplify.Daemon_buffer , args=(queue_,main_buffer_golab),daemon = True)
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show() 

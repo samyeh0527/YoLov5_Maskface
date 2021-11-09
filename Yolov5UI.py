@@ -143,25 +143,25 @@ class Ui_MainWindow(object):
         self.spinBox.setGeometry(QRect(870, 60, 51, 21))
         self.spinBox.setMinimum(-1000)
         self.spinBox.setMaximum(1000)
-        self.spinBox.setValue(-400)
+        self.spinBox.setValue(-10)
         self.spinBox_2 = QSpinBox(self.tab_2)
         self.spinBox_2.setObjectName(u"spinBox_2")
         self.spinBox_2.setGeometry(QRect(960, 60, 51, 21))
         self.spinBox_2.setMinimum(-1000)
         self.spinBox_2.setMaximum(1000)
-        self.spinBox_2.setValue(-100)
+        self.spinBox_2.setValue(10)
         self.spinBox_3 = QSpinBox(self.tab_2)
         self.spinBox_3.setObjectName(u"spinBox_3")
         self.spinBox_3.setGeometry(QRect(870, 140, 51, 21))
         self.spinBox_3.setMinimum(0)
         self.spinBox_3.setMaximum(1000)
-        self.spinBox_3.setValue(250)
+        self.spinBox_3.setValue(10)
         self.spinBox_4 = QSpinBox(self.tab_2)
         self.spinBox_4.setObjectName(u"spinBox_4")
         self.spinBox_4.setGeometry(QRect(960, 140, 51, 21))
         self.spinBox_4.setMinimum(0)
         self.spinBox_4.setMaximum(1000)
-        self.spinBox_4.setValue(50)
+        self.spinBox_4.setValue(20)
         self.tabWidget.addTab(self.tab_2, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
@@ -179,6 +179,29 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u8a0a\u606f\u7a97", None))
+        self.textBrowser.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'PMingLiU'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 |model \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0Speed(ms) \u00a0</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 |YOLOv5s \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a098 \u00a0 \u00a0 \u00a0"
+                        " \u00a0 </span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 |YOLOv5m \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0224 \u00a0 \u00a0 \u00a0 \u00a0</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 |YOLOv5l \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0430 \u00a0 \u00a0 \u00a0 </span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 |YOLOv5x \u00a0 \u00a0"
+                        " \u00a0 \u00a0 \u00a0 \u00a0766 \u00a0 \u00a0 \u00a0 \u00a0</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 \u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 * from Yolov5 Github </span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier N"
+                        "ew','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 * follow \u00a0GPL-3.0 License</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 * Can input Video or youtube or RTSP or http</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 * Suggestion best video size is 640</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0"
+                        " * Platform Ubuntu 20 and Windows 10</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 * Python version &gt;= 3.6</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 * If you have GPU should install 'Pytorch-GPU' \u00a0</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Consolas','Courier New','monospace'; font-size:14px; color:#ce9178;\">\u00a0 \u00a0 \u00a0 \u00a0 \u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594"
+                        "\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594\u2594</span></p></body></html>", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u6a21\u578b\u6a94\u9078\u64c7", None))
         self.radioButton_2.setText(QCoreApplication.translate("MainWindow", u"1280\u00d7720", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u5f71\u7247\u5c3a\u5bf8", None))
