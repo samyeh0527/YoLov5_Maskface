@@ -172,6 +172,7 @@ class LoadImages:  # for inference
         self.nf = ni + nv  # number of files
         self.video_flag = [False] * ni + [True] * nv
         self.mode = 'image'
+        
         if any(videos):
             self.new_video(videos[0])  # new video
         else:
@@ -192,6 +193,7 @@ class LoadImages:  # for inference
             # Read video
             self.mode = 'video'
             ret_val, img0 = self.cap.read()
+            self.timestamp = str(self.cap.get(cv2.CAP_PROP_POS_MSEC))
             if not ret_val:
                 self.count += 1
                 self.cap.release()
@@ -203,7 +205,7 @@ class LoadImages:  # for inference
                     ret_val, img0 = self.cap.read()
 
             self.frame += 1
-            print(f'video {self.count + 1}/{self.nf} ({self.frame}/{self.frames}) {path}: ', end='')
+            # print(f'video {self.count + 1}/{self.nf} ({self.frame}/{self.frames}) {path}: ', end='')
 
         else:
             # Read image
@@ -219,7 +221,7 @@ class LoadImages:  # for inference
         img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
         img = np.ascontiguousarray(img)
 
-        return path, img, img0, self.cap
+        return path, img, img0, self.cap ,self.timestamp
 
     def new_video(self, path):
         self.frame = 0
@@ -276,7 +278,6 @@ class LoadStreams:  # multiple IP or RTSP cameras
         self.mode = 'stream'
         self.img_size = img_size
         self.stride = stride
-        
         if os.path.isfile(sources):
             with open(sources, 'r') as f:
                 sources = [x.strip() for x in f.read().strip().splitlines() if len(x.strip())]
@@ -295,13 +296,13 @@ class LoadStreams:  # multiple IP or RTSP cameras
                 s = pafy.new(s).getbest(preftype="mp4").url  # YouTube URL
             s = eval(s) if s.isnumeric() else s  # i.e. s = '0' local webcam
             cap = cv2.VideoCapture(s)
-            
+            timestamps = cap.get(cv2.CAP_PROP_POS_MSEC)
             assert cap.isOpened(), f'Failed to open {s}'
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             self.fps[i] = max(cap.get(cv2.CAP_PROP_FPS) % 100, 0) or 30.0  # 30 FPS fallback
-            self.timestamps =[cap.get(cv2.CAP_PROP_POS_MSEC)]
             self.frames[i] = max(int(cap.get(cv2.CAP_PROP_FRAME_COUNT)), 0) or float('inf')  # infinite stream fallback
+
             _, self.imgs[i] = cap.read()  # guarantee first frame
             self.threads[i] = Thread(target=self.update, args=([i, cap]), daemon=True)
             print(f" success ({self.frames[i]} frames {w}x{h} at {self.fps[i]:.2f} FPS)")
@@ -323,8 +324,9 @@ class LoadStreams:  # multiple IP or RTSP cameras
             cap.grab()
             if n % read == 0:
                 success, im = cap.retrieve()
-                self.timestamps.append(cap.get(cv2.CAP_PROP_POS_MSEC))
                 self.imgs[i] = im if success else self.imgs[i] * 0
+                self.timestamp = str(cap.get(cv2.CAP_PROP_POS_MSEC))
+                # print("   timestamp is: ", str(cap.get(cv2.CAP_PROP_POS_MSEC)))
             time.sleep(1 / self.fps[i])  # wait time
 
     def __iter__(self):
@@ -348,7 +350,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
         img = img[..., ::-1].transpose((0, 3, 1, 2))  # BGR to RGB, BHWC to BCHW
         img = np.ascontiguousarray(img)
 
-        return self.sources, img, img0, None
+        return self.sources, img, img0, None ,self.timestamp
 
     def __len__(self):
         return len(self.sources)  # 1E12 frames = 32 streams at 30 FPS for 30 years

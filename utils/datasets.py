@@ -193,7 +193,7 @@ class LoadImages:  # for inference
             # Read video
             self.mode = 'video'
             ret_val, img0 = self.cap.read()
-            self.timestamp = str(self.cap.get(cv2.CAP_PROP_POS_MSEC))
+            #self.timestamp = str(self.cap.get(cv2.CAP_PROP_POS_MSEC))
             if not ret_val:
                 self.count += 1
                 self.cap.release()
@@ -296,7 +296,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
                 s = pafy.new(s).getbest(preftype="mp4").url  # YouTube URL
             s = eval(s) if s.isnumeric() else s  # i.e. s = '0' local webcam
             cap = cv2.VideoCapture(s)
-            timestamps = cap.get(cv2.CAP_PROP_POS_MSEC)
+           #timestamps = cap.get(cv2.CAP_PROP_POS_MSEC)
             assert cap.isOpened(), f'Failed to open {s}'
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -325,7 +325,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
             if n % read == 0:
                 success, im = cap.retrieve()
                 self.imgs[i] = im if success else self.imgs[i] * 0
-                self.timestamp = str(cap.get(cv2.CAP_PROP_POS_MSEC))
+                #self.timestamp = str(cap.get(cv2.CAP_PROP_POS_MSEC))
                 # print("   timestamp is: ", str(cap.get(cv2.CAP_PROP_POS_MSEC)))
             time.sleep(1 / self.fps[i])  # wait time
 
@@ -350,7 +350,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
         img = img[..., ::-1].transpose((0, 3, 1, 2))  # BGR to RGB, BHWC to BCHW
         img = np.ascontiguousarray(img)
 
-        return self.sources, img, img0, None ,self.timestamp
+        return self.sources, img, img0, None 
 
     def __len__(self):
         return len(self.sources)  # 1E12 frames = 32 streams at 30 FPS for 30 years
