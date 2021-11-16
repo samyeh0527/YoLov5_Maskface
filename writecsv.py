@@ -14,4 +14,10 @@ class get_timestamp():
         with open('timestamp.csv', 'a+', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow([timestamp_format,self.count,self.boundingbox])            
-            print(f' _______________________________________________ 總人數{self.count}   {self.boundingbox}')
+            # print(f' _______________________________________________ 總人數{self.count}   {self.boundingbox}')
+    def sum_timestamp_(self):
+        timestamp_format = convertMillis.convertMillis(self.timestamp)
+        with open('timestamp_sum.csv', 'a+', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([timestamp_format,self.count,self.boundingbox])            
+            # print(f' _______________________________________________ 總人數{self.count}   {self.boundingbox}')

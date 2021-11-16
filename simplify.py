@@ -62,10 +62,10 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         main_buffer_golab = None,
         locks = None,
         sound_bools = None,
-        x1 =0,
-        y1 =0,
-        x2 =0,
-        y2 =0
+        x1 = 0,
+        y1 = 0,
+        x2 = 0,
+        y2 = 0
         ):
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
@@ -159,6 +159,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
+            x_1 , y_1 ,x_2,y_2= bboxautoresize(imc.shape[0],imc.shape[1],x1,y1,x2,y2)
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
@@ -186,7 +187,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         Run_buffer+=1
                         #c1 = xy left top ,c2 = xy2 right bottom
                         c1, c2 = (int(xyxy[0]), int(xyxy[1])), (int(xyxy[2]), int(xyxy[3]))
-                        x_1 , y_1 ,x_2,y_2= bboxautoresize(imc.shape[0],imc.shape[1],x1,y1,x2,y2)
+                        
                         bboxCenter = [x_1, y_1, x_2, y_2]
                         bbox_2 = [c1[0], c1[1], (c2[0]-c1[0]), (c2[1]-c1[1])]
                         bbox_1 = [x_1, y_1, (x_2-x_1), (y_2-y_1)]
@@ -249,6 +250,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 cv2.namedWindow(str(p), cv2.WINDOW_NORMAL)
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
+                
             # Save results (image with detections)
             # if save_img:
             #     if dataset.mode == 'image':
@@ -335,7 +337,7 @@ def sound_deamon(queue_,sound_bools,locks):
             locks.value = 1
         if len(sound_bools) > 10:
             sound_bools[3:] = []
-
+      
 
 
 

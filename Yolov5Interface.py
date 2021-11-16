@@ -16,11 +16,11 @@ sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 from utils.general import check_requirements,colorstr
 import argparse
 import time , gc
-from Autoresize import *
+# from Autoresize import *
 gc.enable()
 #rtsp://admin:226988@192.168.8.149:554/live/profile.0
 
-
+import cProfile
 soundlock =False
 temp_lock = noise_lock = False
 class MainWindow(QMainWindow):
@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         self.ui.spinBox.valueChanged.connect(self.spinbox_xy_valuechange)
         self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
         self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
-        self.ui.graphicsView.setScene(self.graphics())
+        # self.ui.graphicsView.setScene(self.graphics())
         self.ui.spinBox.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_2.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_3.valueChanged.connect(self.spinbox_xy_valuechange)
@@ -50,20 +50,24 @@ class MainWindow(QMainWindow):
         
         #監聽事件
     def spinbox_xy_valuechange(self):
-        self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
-        self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
-        self.ui.graphicsView.setScene(self.graphics())
-        self.x1 = self.ui.spinBox.value()
-        self.y1 = self.ui.spinBox_2.value()  
-        self.x2 = self.ui.spinBox_3.value()
-        self.y2 = self.ui.spinBox_4.value()
+        try:
+            self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
+            self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
+            self.ui.graphicsView.setScene(self.graphics())
+            self.x1 = self.ui.spinBox.value()
+            self.y1 = self.ui.spinBox_2.value()  
+            self.x2 = self.ui.spinBox_3.value()
+            self.y2 = self.ui.spinBox_4.value()
+        except  Exception as e:
+            self.ui.textBrowser.append(e)
+        
         #Graphics view 
-    def graphics(self):
-        scene = QGraphicsScene()
-        pen = QPen(Qt.blue)
-        scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width/5,self.graphicsView_ret_height/5),pen)
+    # def graphics(self):
+    #     scene = QGraphicsScene()
+    #     pen = QPen(Qt.blue)
+    #     scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width/5,self.graphicsView_ret_height/5),pen)
          
-        return scene
+        # return scene
 
     def itemActivated_event(self):
         try:
@@ -92,7 +96,7 @@ class MainWindow(QMainWindow):
 
         
     def show_all_info(self):
-        # try:
+        try:
             cpu_count = mp.cpu_count()
             self.ui.textBrowser.append(f'')
             self.source = self.ui.textEdit.toPlainText()
@@ -102,17 +106,17 @@ class MainWindow(QMainWindow):
             self.otherfuction()
             self.ui.textBrowser.append(f'================YOLOV5 Information================')
             self.ui.textBrowser.append(f'{self.local__time()  } CPU 數量 : {cpu_count}')
-            self.ui.textBrowser.append(f'{self.local__time()  } model pt : {self.weights} ')
-            self.ui.textBrowser.append(f'{self.local__time()  } source  : {self.source} ')
-            self.ui.textBrowser.append(f'{self.local__time()  } img_size  : {self.img_size}')
-            self.ui.textBrowser.append(f'{self.local__time()  } confidence threshold  : {self.confidence_threshold}')
-            self.ui.textBrowser.append(f'{self.local__time()  } other fuction  temperature : {self.temperature} noise : {self.noise}') 
+            self.ui.textBrowser.append(f'{self.local__time()  } Model pt : {self.weights} ')
+            self.ui.textBrowser.append(f'{self.local__time()  } Source  : {self.source} ')
+            self.ui.textBrowser.append(f'{self.local__time()  } Img_size  : {self.img_size}')
+            self.ui.textBrowser.append(f'{self.local__time()  } Confidence threshold  : {self.confidence_threshold}')
+            self.ui.textBrowser.append(f'{self.local__time()  } Other fuction  temperature : {self.temperature} noise : {self.noise}') 
             self.ui.textBrowser.append(f'{self.local__time()  } Noise IOU  : {self.noiseIOU}')     
 
             opt = self.parse_opt()
             main(self,opt)
-        # except Exception as e :
-            # self.ui.textBrowser.append(f'{self.local__time()  } show_all_info error {e}')
+        except Exception as e :
+            self.ui.textBrowser.append(f'{self.local__time()  } show_all_info error {e}')
 
         
     def parse_opt(self):
@@ -139,44 +143,45 @@ class MainWindow(QMainWindow):
             opt = parser.parse_args()
             return opt
 
+#Noist process start and stop 
+def process_2_start():
+    process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon = True)
+    process_2.start()
+    return process_2
+#Temp  process start and stop 
+def process_1_start():
+    process_1 = mp.Process(target=simplify.Daemon_buffer , args=(queue_,main_buffer_golab),daemon = True)
+    process_1.start()
+    return process_1
+
+def process_stop(process):
+    process.kill()
 
 
 
-def main(self,opt): 
+def main(self,opt):     
 #Temperature lock and noise is bool for process lock can use process.lock replace   
      
     if self.temperature and self.noise is True: 
         #temperature
-        process_1.start()
-        #noise
-        process_2.start()
+        p1 = process_1_start()
+        p2 = process_2_start()
         print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
         check_requirements(exclude=('tensorboard', 'thop'))
         simplify.run(**vars(opt))
-        process_2.kill()
-        process_1.kill()
+        process_stop(p1)
+        process_stop(p2)
         
     elif self.noise is True: 
-        if self.first_run == True:
-            self.ui.textBrowser.append(f'{self.local__time()  }  Process2 state :{process_2.pid} {process_2.is_alive()}')   
-            print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
-            check_requirements(exclude=('tensorboard', 'thop'))
-            simplify.run(**vars(opt))
-        else:
-            process_2.start()
-            self.ui.textBrowser.append(f'{self.local__time()  }  New Process2 state :{process_2.pid} {process_2.is_alive()}')   
-            print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
-            check_requirements(exclude=('tensorboard', 'thop'))
-            simplify.run(**vars(opt))
-            self.first_run = True
+        p2 = process_2_start()
+        self.ui.textBrowser.append(f'{self.local__time()  }  New Process2 state :{p2.pid} {p2.is_alive()}')   
+        print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
+        check_requirements(exclude=('tensorboard', 'thop'))
+        simplify.run(**vars(opt))
+        process_stop(p2)
         gc.collect()
         
-    else:
-        
-        self.ui.textBrowser.append(f'{self.local__time()  }  Process2 state : {process_2.is_alive()}') 
-        if process_2.is_alive():
-            process_2.kill()
-            self.ui.textBrowser.append(f'{self.local__time()  }  Process2 state : {process_2.is_alive()}')    
+    else:  
         print(colorstr('detect: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
         check_requirements(exclude=('tensorboard', 'thop'))
         simplify.run(**vars(opt))
@@ -194,8 +199,7 @@ if __name__ == "__main__":
     locks = manager.Value('d',1)
     #Default Bools 
     sound_bools.append(False)  
-    process_2 = mp.Process(target=simplify.sound_deamon , args=(queue_,sound_bools,locks),daemon = True)
-    process_1 = mp.Process(target=simplify.Daemon_buffer , args=(queue_,main_buffer_golab),daemon = True)
+
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show() 

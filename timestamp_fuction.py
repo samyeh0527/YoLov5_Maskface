@@ -84,13 +84,19 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         session = onnxruntime.InferenceSession(w, None)
     imgsz = check_img_size(imgsz, s=stride)  # check image size
 
+
+    #pepole count parameter
+    sum_count = sum_nomask = 0
+
     # Dataloader
     if webcam:
         view_img = check_imshow()
         cudnn.benchmark = True  # set True to speed up constant image size inference
+        print(f'               LoadStreams start ')
         dataset = LoadStreams(source, img_size=imgsz, stride=stride)
         bs = len(dataset)  # batch_size
     else:
+        print(f'               LoadImages start ')
         dataset = LoadImages(source, img_size=imgsz, stride=stride)
         bs = 1  # batch_size
     vid_path, vid_writer = [None] * bs, [None] * bs
@@ -143,7 +149,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
-                # Print results
+                # Print results 
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
@@ -151,20 +157,27 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c1, c2 = (int(xyxy[0]), int(xyxy[1])), (int(xyxy[2]), int(xyxy[3]))
-                    x_1 , y_1 ,x_2,y_2= bboxautoresize(y = imc.shape[0],x = imc.shape[1])
+                    x_1 , y_1 ,x_2,y_2= bboxautoresize(imc.shape[0],imc.shape[1])
                     bboxCenter = [x_1, y_1, x_2, y_2]
                     bbox_2 = [c1[0], c1[1], (c2[0]-c1[0]), (c2[1]-c1[1])]
                     bbox_1 = [x_1, y_1, (x_2-x_1), (y_2-y_1)]
                     #calculator iou 
                     iou = get_iou(bbox_1, bbox_2)
-                    # print(f'..............                      {iou}')
-                    if iou >0 and int(cls) == 0:
+
+                    #n = number c= class   
+                    if iou >0 and int(c) == 0:
                         count +=1
+                        sum_count+=int(n)
                         get_timestamp(timestamp,count,boundingbox).timestamp_()
-                    if int(cls) != 0  and iou >0:
+                        get_timestamp(timestamp,sum_count,sum_nomask).sum_timestamp_()
+
+                    if  iou >0 and int(c) != 0 :
                         count+=1        
                         boundingbox +=1 
-                        get_timestamp(timestamp,count,boundingbox).timestamp_()     
+                        sum_nomask +=int(n)
+                        sum_count+=int(n)
+                        get_timestamp(timestamp,count,boundingbox).timestamp_()
+                        get_timestamp(timestamp,sum_count,sum_nomask).sum_timestamp_()     
 
 
 
@@ -274,6 +287,9 @@ def main(opt):
 if __name__ == "__main__":
     with open('timestamp.csv', 'w+', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['times(ms)','總人數','未戴口罩人數'])
+        writer.writerow(['hh:mm:ss.ms','總人數','未戴口罩人數'])
+    with open('timestamp_sum.csv', 'w+', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['hh:mm:ss.ms' ,'總人數', '未戴口罩人數'])
     opt = parse_opt()
     main(opt)
