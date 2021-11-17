@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         self.ui.spinBox.valueChanged.connect(self.spinbox_xy_valuechange)
         self.graphicsView_ret_height = (self.ui.spinBox_4.value())- (self.ui.spinBox_2.value())
         self.graphicsView_ret_width = self.ui.spinBox_3.value()- self.ui.spinBox.value()
-        # self.ui.graphicsView.setScene(self.graphics())
+        self.ui.graphicsView.setScene(self.graphics())
         self.ui.spinBox.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_2.valueChanged.connect(self.spinbox_xy_valuechange)
         self.ui.spinBox_3.valueChanged.connect(self.spinbox_xy_valuechange)
@@ -62,12 +62,12 @@ class MainWindow(QMainWindow):
             self.ui.textBrowser.append(e)
         
         #Graphics view 
-    # def graphics(self):
-    #     scene = QGraphicsScene()
-    #     pen = QPen(Qt.blue)
-    #     scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width/5,self.graphicsView_ret_height/5),pen)
+    def graphics(self):
+        scene = QGraphicsScene()
+        pen = QPen(Qt.blue)
+        scene.addRect(QRectF ( 0 , 0,self.graphicsView_ret_width/5,self.graphicsView_ret_height/5),pen)
          
-        # return scene
+        return scene
 
     def itemActivated_event(self):
         try:

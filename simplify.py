@@ -117,7 +117,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
     
     TemperatureWork = None
     Run_buffer = 0
-    for path, img, im0s, vid_cap ,timestamp in dataset:       
+    for path, img, im0s, vid_cap in dataset:       
         if pt:
             img = torch.from_numpy(img).to(device)
             img = img.half() if half else img.float()  # uint8 to fp16/32
